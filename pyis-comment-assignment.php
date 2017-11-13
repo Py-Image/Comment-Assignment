@@ -20,7 +20,7 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 	 *
 	 * @since	  1.0.0
 	 */
-	class PYIS_Comment_Assignment {
+	final class PYIS_Comment_Assignment {
 		
 		/**
 		 * @var			PYIS_Comment_Assignment $plugin_data Holds Plugin Header Info
@@ -161,6 +161,12 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 		 * @return	  void
 		 */
 		private function require_necessities() {
+			
+			if ( is_admin() ) {
+				
+				require_once PYIS_Comment_Assignment_DIR . 'core/admin/class-pyis-comment-assignment-edit-comments.php';
+				
+			}
 			
 		}
 		
