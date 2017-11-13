@@ -1,0 +1,17 @@
+{
+	"name": "pyis_comment_assignment",
+	"version": "0.1.0",
+	"dependencies": {},
+	"ignore": [
+		"**/.*",
+		"node_modules",
+		"bower_components",
+		"test",
+		"tests"
+	],
+	"private": true,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Py-Image/comment-assignment.git"
+	}
+}
