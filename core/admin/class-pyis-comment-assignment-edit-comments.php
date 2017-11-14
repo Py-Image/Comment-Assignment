@@ -26,6 +26,7 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 	function __construct() {
 		
 		add_filter( 'manage_edit-comments_columns', array( $this, 'get_columns' ) );
+		add_filter( 'manage_assigned-comments_columns', array( $this, 'get_columns' ) );
 		
 		add_action( 'manage_comments_custom_column', array( $this, 'assign_column' ), 10, 2 );
 		
@@ -59,11 +60,13 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		$columns = PYISCOMMENTASSIGNMENT()->comments_list_table->get_columns();
 		
 		global $pagenow;
+		global $current_screen;
 		
 		global $pyis_edit_comments_ajax;
 		
 		// Allow AJAX for Edit Comments to go through
 		if ( ! is_admin() ||
+			$current_screen->id == 'assigned-comments' || 
 		   ( $pagenow !== 'edit-comments.php' && ! $pyis_edit_comments_ajax ) ) return $columns;
 		
 		// Reset
@@ -136,9 +139,13 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 	public function add_assignment_to_quick_edit() {
 		
 		global $pagenow;
+		global $current_screen;
 		
 		if ( ! is_admin() ||
 		   $pagenow !== 'edit-comments.php' ) return;
+		
+		// We do not need the additions on the Assigned Comments Sub-Page
+		if ( $current_screen->id == 'assigned-comments' ) echo ob_get_clean();
 		
 		// Grab all the Users and build a Select Field
 		$user_query = new WP_User_Query( array(
@@ -228,17 +235,21 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 			wp_die( __( 'ERROR: please type a comment.' ) );
 		
 		// Allow unassignment
-		if ( ! isset( $_POST['assigned_to'] ) || 
-		   empty( $_POST['assigned_to'] ) ) {
+		if ( isset( $_POST['assigned_to'] ) && 
+			$_POST['assigned_to'] == '' ) {
 			$delete = delete_comment_meta( $comment_id, 'assigned_to' );
+		}
+		else if ( isset( $_POST['assigned_to'] ) && 
+				$_POST['assigned_to'] !== '' ) {
+			$success = update_comment_meta( $comment_id, 'assigned_to', $_POST['assigned_to'] );
 		}
 		
 		if ( isset( $_POST['assigned_to'] ) ) {
+			
 			global $pyis_edit_comments_ajax;
 			$pyis_edit_comments_ajax = true;
+			
 		}
-		
-		$success = update_comment_meta( $comment_id, 'assigned_to', $_POST['assigned_to'] );
 		
 	}
 	
