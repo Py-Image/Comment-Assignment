@@ -169,7 +169,7 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		// Remove any Line Breaks from the <fieldset> we just grabbed
 		// If we remove the Line Breaks from the Object Buffer itself it produces errors for some reason
-		$fields = preg_replace( "/\r|\n/", "", $matches[1] );
+		$fields = preg_replace( "/\r|\n/", "", $matches[0] );
 		
 		// Place all of our injected fields after the last </div> in the <fieldset>
 		$injected_fields = substr_replace( $fields, "{$insert}</div>", strrpos( $fields, '</div>' ), 6 );
