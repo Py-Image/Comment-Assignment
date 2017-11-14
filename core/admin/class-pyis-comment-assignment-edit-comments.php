@@ -33,8 +33,6 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		
-		//add_filter( 'comment_row_actions', array( $this, 'comment_row_actions' ), 10, 2 );
-		
 	}
 	
 	/**
@@ -53,6 +51,11 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		remove_filter( 'comment_author', array( $this->comments_list_table, 'floated_admin_avatar' ) );
 		
 		$columns = $this->comments_list_table->get_columns();
+		
+		global $pagenow;
+		
+		if ( ! is_admin() ||
+		   $pagenow !== 'edit-comments.php' ) return $columns;
 		
 		$columns['assigned_to'] = __( 'Assigned To', 'pyis-comment-assignment' );
 		
@@ -74,7 +77,19 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		if ( $column_name !== 'assigned_to' ) return;
 		
-		echo get_comment_meta( $comment_id, $column_name, true );
+		$user_id = get_comment_meta( $comment_id, $column_name, true );
+		
+		if ( ! $user_id ) return;
+		
+		$user_data = get_userdata( $user_id );
+
+		?>
+
+		<a href="<?php echo admin_url( 'user-edit.php?user_id=' . $user_id ); ?>" title="<?php echo $user_data->display_name; ?>">
+			<?php echo $user_data->display_name; ?>
+		</a>
+		
+		<?php 
 		
 	}
 	
@@ -225,14 +240,6 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		   $pagenow !== 'edit-comments.php' ) return;
 		
 		wp_enqueue_script( 'pyis-comment-assignment-admin-edit-comments' );
-		
-	}
-	
-	public function comment_row_actions( $actions, $comment ) {
-		
-		$actions['assign'] = 'assign';
-		
-		return $actions;
 		
 	}
 	
