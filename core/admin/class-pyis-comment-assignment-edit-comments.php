@@ -33,6 +33,8 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		
+		add_action( 'add_meta_boxes_comment', array( $this, 'add_meta_boxes_comment' ) );
+		
 	}
 	
 	/**
@@ -240,6 +242,71 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		   $pagenow !== 'edit-comments.php' ) return;
 		
 		wp_enqueue_script( 'pyis-comment-assignment-admin-edit-comments' );
+		
+	}
+	
+	/**
+	 * Add Meta Box for Comment Assignment when on the actual Comment Editing page
+	 * 
+	 * @param		object $comment WP_Comment object
+	 *                                    
+	 * @access		public
+	 * @since		{{VERSION}}
+	 * @return		void
+	 */
+	public function add_meta_boxes_comment( $comment ) {
+		
+		// WordPress Core _doing_it_wrong()
+		// The whole Comment Editing experience is hardcoded and so terrible
+		add_meta_box(
+            'pyis-comment-assignment',
+            __( 'Assigned To', 'pyis-comment-assignment' ),
+            array( $this, 'comment_assignment_metabox' ),
+            null,
+			'normal' // We cannot use "side" because the Comment Editing screen simply doesn't allow that
+        );
+		
+	}
+	
+	/**
+	 * Meta Box Content for the Comment Assignment Meta Box
+	 * @param [[Type]] $comment [[Description]]
+	 */
+	public function comment_assignment_metabox( $comment ) {
+		
+		// Grab all the Users and build a Select Field
+		$user_query = new WP_User_Query( array(
+			'meta_key' => 'last_name',
+			'orderby' => 'meta_value',
+			'order' => 'ASC'
+		) );
+		
+		$users = array();
+		if ( $user_query->get_total() > 0 ) {
+			$users += wp_list_pluck( $user_query->get_results(), 'data', 'ID' );
+		}
+		
+		$assigned_to = get_comment_meta( $comment->comment_ID, 'assigned_to', true );
+		
+		?>
+
+		<select name="assigned_to">
+			
+			<option value="">
+				<?php _e( 'Select a User', 'pyis-comment-assignment' ); ?>
+			</option>
+		
+			<?php foreach ( $users as $user_id => $user_data ) : ?>
+			
+				<option value="<?php echo $user_id; ?>"<?php echo ( (string) $user_id == $assigned_to ) ? ' selected' : ''; ?>>
+					<?php echo $user_data->display_name; ?>
+				</option>
+
+			<?php endforeach; ?>
+			
+		</select>
+
+		<?php
 		
 	}
 	
