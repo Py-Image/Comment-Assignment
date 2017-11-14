@@ -35,22 +35,47 @@ gulp.task( 'uglify:front', function() {
 
 } );
 
-gulp.task( 'uglify:admin', function() {
+gulp.task( 'uglify:admin', ['uglify:admin:edit_comments', 'uglify:admin:assigned_comments'], function( done ) {
+	done();
+} );
 
-	return gulp.src( config.admin.vendor.concat( config.admin.src ) )
+gulp.task( 'uglify:admin:edit_comments', function() {
+
+	return gulp.src( config.admin.edit_comments.vendor.concat( config.admin.edit_comments.src ) )
 		.pipe( $.plumber( { errorHandler: onError } ) )
 		.pipe( $.sourcemaps.init() )
 		.pipe( $.babel( {
 			presets: ['es2015'] // Gulp-uglify has no official support for ECMAScript 2015 (aka ES6, aka Harmony), so we'll transpile to EcmaScript5
 		} ) )
-		.pipe( $.concat( config.admin.filename ) )
+		.pipe( $.concat( config.admin.edit_comments.filename ) )
 		.pipe( $.uglify() )
 		.pipe( gulpif( ! isRelease, $.sourcemaps.write( '.' ) ) )
 		.pipe( gulp.dest( config.admin.root ) )
 		.pipe( $.plumber.stop() )
 		.pipe( notify( {
 			title: pkg.name,
-			message: 'Admin JS Complete',
+			message: 'Edit Comments JS Complete',
+			onLast: true
+		} ) );
+
+} );
+
+gulp.task( 'uglify:admin:assigned_comments', function() {
+
+	return gulp.src( config.admin.assigned_comments.vendor.concat( config.admin.assigned_comments.src ) )
+		.pipe( $.plumber( { errorHandler: onError } ) )
+		.pipe( $.sourcemaps.init() )
+		.pipe( $.babel( {
+			presets: ['es2015'] // Gulp-uglify has no official support for ECMAScript 2015 (aka ES6, aka Harmony), so we'll transpile to EcmaScript5
+		} ) )
+		.pipe( $.concat( config.admin.assigned_comments.filename ) )
+		.pipe( $.uglify() )
+		.pipe( gulpif( ! isRelease, $.sourcemaps.write( '.' ) ) )
+		.pipe( gulp.dest( config.admin.root ) )
+		.pipe( $.plumber.stop() )
+		.pipe( notify( {
+			title: pkg.name,
+			message: 'Assigned Comments JS Complete',
 			onLast: true
 		} ) );
 

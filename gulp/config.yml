@@ -15,12 +15,19 @@ javascript:
       - "!build/js/tinymce/**/*.js"
   admin:
     root: "./assets/js"
-    filename: "admin.js"
-    vendor:
-      - ""
+    edit_comments:
+      filename: "edit-comments.js"
+      vendor:
+        - ""
+      src:
+        - "build/js/admin/edit-comments/**/*.js"
+    assigned_comments:
+      filename: "assigned-comments.js"
+      vendor:
+        - ""
+      src:
+        - "build/js/admin/assigned-comments/**/*.js"
     notification: "Running Admin JavaScript"
-    src:
-      - "build/js/admin/**/*.js"
   tinymce:
     root: "./assets/js/tinymce/"
     notification: "Running TinyMCE JavaScript"
@@ -53,7 +60,9 @@ watch:
       - "build/js/**/*.js"
       - "!build/js/admin/**/*.js"
       - "!build/js/tinymce/**/*.js"
-    admin: "build/js/admin/**/*.js"
+    admin:
+      edit_comments: "build/js/admin/edit-comments/*.js"
+      assigned_comments: "build/js/admin/assigned-comments/*.js"
     tinymce: "build/js/tinymce/**/*.js"
   sass: 
     front: 

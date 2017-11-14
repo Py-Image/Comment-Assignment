@@ -227,8 +227,8 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 			);
 			
 			wp_register_script(
-				'pyis-comment-assignment-admin',
-				PYIS_Comment_Assignment_URL . 'assets/js/admin.js',
+				'pyis-comment-assignment-admin-edit-comments',
+				PYIS_Comment_Assignment_URL . 'assets/js/edit-comments.js',
 				array( 'jquery' ),
 				defined( 'WP_DEBUG' ) && WP_DEBUG ? time() : PYIS_Comment_Assignment_VER,
 				true

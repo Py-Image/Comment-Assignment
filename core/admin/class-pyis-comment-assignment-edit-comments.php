@@ -29,6 +29,10 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		add_action( 'init', array( $this, 'start_page_capture' ), 99 );
 		add_action( 'shutdown', array( $this, 'add_assignment_to_quick_edit' ), 0 );
 		
+		add_action( 'wp_ajax_edit-comment', array( $this, 'wp_ajax_edit_comment' ), 1 );
+		
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		
 		//add_filter( 'comment_row_actions', array( $this, 'comment_row_actions' ), 10, 2 );
 		
 	}
@@ -50,7 +54,7 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		$columns = $this->comments_list_table->get_columns();
 		
-		$columns['assign'] = __( 'Assigned To', 'pyis-comment-assignment' );
+		$columns['assigned_to'] = __( 'Assigned To', 'pyis-comment-assignment' );
 		
 		return $columns;
 		
@@ -68,9 +72,9 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 	 */
 	public function assign_column( $column_name, $comment_id ) {
 		
-		if ( $column_name !== 'assign' ) return;
+		if ( $column_name !== 'assigned_to' ) return;
 		
-		echo 'test';
+		echo get_comment_meta( $comment_id, $column_name, true );
 		
 	}
 	
@@ -156,6 +160,53 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 
 		// Echo out the modified Object Buffer. This works kind of like a Filter, but it is technically an Action
 		echo $content;
+		
+	}
+	
+	/**
+	 * Hook into the AJAX Callback that the Quick Edit screen uses so that any changes to our Hidden Input are saved
+	 * This fires off before WP Core's does, which means when it redraws the Table Row everything is taken care of for us
+	 * 
+	 * @access		public
+	 * @since		{{VERSION}}
+	 * @return		void
+	 */
+	public function wp_ajax_edit_comment() {
+		
+		check_ajax_referer( 'replyto-comment', '_ajax_nonce-replyto-comment' );
+
+		$comment_id = (int) $_POST['comment_ID'];
+		if ( ! current_user_can( 'edit_comment', $comment_id ) )
+			wp_die( -1 );
+
+		if ( '' == $_POST['content'] )
+			wp_die( __( 'ERROR: please type a comment.' ) );
+		
+		// Allow unassignment
+		if ( ! isset( $_POST['assigned_to'] ) || 
+		   empty( $_POST['assigned_to'] ) ) {
+			$delete = delete_comment_meta( $comment_id, 'assigned_to' );
+		}
+		
+		$success = update_comment_meta( $comment_id, 'assigned_to', $_POST['assigned_to'] );
+		
+	}
+	
+	/**
+	 * Enqueue Script to update the Hidden Input with the value of the Select Field
+	 * 
+	 * @access		public
+	 * @since		{{VERSION}}
+	 * @return		void
+	 */
+	public function admin_enqueue_scripts() {
+		
+		global $pagenow;
+		
+		if ( ! is_admin() ||
+		   $pagenow !== 'edit-comments.php' ) return;
+		
+		wp_enqueue_script( 'pyis-comment-assignment-admin-edit-comments' );
 		
 	}
 	
