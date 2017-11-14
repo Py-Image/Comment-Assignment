@@ -35,6 +35,8 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		add_action( 'add_meta_boxes_comment', array( $this, 'add_meta_boxes_comment' ) );
 		
+		add_filter( 'comment_edit_redirect', array( $this, 'save_comment' ), 10, 2 );
+		
 	}
 	
 	/**
@@ -270,7 +272,12 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 	
 	/**
 	 * Meta Box Content for the Comment Assignment Meta Box
-	 * @param [[Type]] $comment [[Description]]
+	 * 
+	 * @param		object $comment WP_Comment Object
+	 *                                    
+	 * @access		public
+	 * @since		{{VERSION}}
+	 * @return		void
 	 */
 	public function comment_assignment_metabox( $comment ) {
 		
@@ -287,6 +294,8 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		}
 		
 		$assigned_to = get_comment_meta( $comment->comment_ID, 'assigned_to', true );
+		
+		wp_nonce_field( 'save_comment_assignment_' . $comment->comment_ID, 'comment_assignment_nonce' );
 		
 		?>
 
@@ -307,6 +316,35 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		</select>
 
 		<?php
+		
+	}
+	
+	/**
+	 * This is the only way to hook into the saving of the Edit Comment form. Thanks, WP Core
+	 * 
+	 * @param		string  $location   The URI the user will be redirected to
+	 * @param		integer $comment_id The ID of the comment being edited
+	 *                                                         
+	 * @access		public
+	 * @since		{{VERSION}}
+	 * @return		string  The URI the user will be redirected to
+	 */
+	public function save_comment( $location, $comment_id ) {
+		
+		// Not allowed, return regular value without updating meta
+		if ( ! wp_verify_nonce( $_POST['comment_assignment_nonce'], 'save_comment_assignment_' . $comment_id ) && 
+			! isset( $_POST['assigned_to'] ) ) 
+			return $location;
+
+		// Update meta
+		$update = update_comment_meta( 
+			$comment_id, 
+			'assigned_to', 
+			$_POST['assigned_to']
+		);
+
+		// Return regular value after updating  
+		return $location;
 		
 	}
 	
