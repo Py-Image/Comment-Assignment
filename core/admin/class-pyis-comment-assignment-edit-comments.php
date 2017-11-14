@@ -25,6 +25,10 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		add_action( 'manage_comments_custom_column', array( $this, 'assign_column' ), 10, 2 );
 		
+		// Inject User Assignment into Quick Edit screen
+		add_action( 'init', array( $this, 'start_page_capture' ), 99 );
+		add_action( 'shutdown', array( $this, 'add_assignment_to_quick_edit' ), 0 );
+		
 		//add_filter( 'comment_row_actions', array( $this, 'comment_row_actions' ), 10, 2 );
 		
 	}
@@ -67,6 +71,91 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		if ( $column_name !== 'assign' ) return;
 		
 		echo 'test';
+		
+	}
+	
+	/**
+	 * If we're on the generic Edit Comments screen, start an Object Buffer
+	 * 
+	 * @access		public
+	 * @since		{{VERSION}}
+	 * @return		void
+	 */
+	public function start_page_capture() {
+		
+		global $pagenow;
+		
+		if ( is_admin() && 
+		   $pagenow == 'edit-comments.php' ) {
+			ob_start();
+		}
+		
+	}
+	
+	/**
+	 * WordPress has literally no way to add to the Quick Edit screen for Comments
+	 * This is the best that can be done while hopefully working into the foreseeable future
+	 * We run some Regex after the Page has loaded on our Object Buffer and inject the modified <fieldset> into the Page.
+	 * By doing it this way, we don't have to worry about JavaScript having any kind of nasty delay
+	 * 
+	 * @access		public
+	 * @since		{{VERSION}}
+	 * @return		void
+	 */
+	public function add_assignment_to_quick_edit() {
+		
+		global $pagenow;
+		
+		if ( ! is_admin() ||
+		   $pagenow !== 'edit-comments.php' ) return;
+		
+		// Grab all the Users and build a Select Field
+		$user_query = new WP_User_Query( array(
+			'meta_key' => 'last_name',
+			'orderby' => 'meta_value',
+			'order' => 'ASC'
+		) );
+		
+		$users = array();
+		$select_field = '';
+		if ( $user_query->get_total() > 0 ) {
+			$users += wp_list_pluck( $user_query->get_results(), 'data', 'ID' );
+		}
+		
+		$select_field .= '<select id="assigned-to-select">';
+			$select_field .= '<option value="">' . __( 'Select a User', 'pyis-comment-assignment' ) . '</option>';
+			foreach ( $users as $user_id => $user_data ) {
+				$select_field .= '<option value="' . $user_id . '">' . $user_data->user_login . '</option>';
+			}
+		$select_field .= '</select>';
+		
+		// The Select Field is just for ease of use. The hidden Input field is what actually gets submitted by WordPress via AJAX
+		$insert = '<div class="inside">';
+			$insert .= '<label for="assigned-to">' . __( 'Assign', 'pyis-comment-assignment' ) . '</label>';
+			$insert .= $select_field;
+			$insert .= '<input type="hidden" id="assigned-to" name="assigned_to" value="" />';
+		$insert .= '</div>';
+
+		// Grab our Object Buffer
+		$content = ob_get_clean();
+		
+		// Grab our <fieldset> from the Object Buffer
+		// The "s" at the end is the DOT-ALL modifier. This allows us to match over line-breaks
+		// Here's a good explaination: https://stackoverflow.com/a/2240607
+		$match = preg_match( '#<fieldset class="comment-reply"(?:[^>]*)>(.*)<\/fieldset>#is', $content, $matches );
+		
+		// Remove any Line Breaks from the <fieldset> we just grabbed
+		// If we remove the Line Breaks from the Object Buffer itself it produces errors for some reason
+		$fields = preg_replace( "/\r|\n/", "", $matches[1] );
+		
+		// Place all of our injected fields after the last </div> in the <fieldset>
+		$injected_fields = substr_replace( $fields, "{$insert}</div>", strrpos( $fields, '</div>' ), 6 );
+		
+		// Swap the <fieldset> if the Object Buffer with our modified one
+		$content = preg_replace( '#<fieldset class="comment-reply"([^>]*)>(.*)<\/fieldset>#is', $injected_fields, $content );
+
+		// Echo out the modified Object Buffer. This works kind of like a Filter, but it is technically an Action
+		echo $content;
 		
 	}
 	
