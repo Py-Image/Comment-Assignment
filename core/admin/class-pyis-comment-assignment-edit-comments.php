@@ -10,6 +10,10 @@
 
 defined( 'ABSPATH' ) || die();
 
+global $pyis_edit_comments_ajax;
+
+$pyis_edit_comments_ajax = false;
+
 final class PYIS_Comment_Assignment_Edit_Comments {
 	
 	public $comments_list_table;
@@ -49,17 +53,21 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 	 */
 	public function get_columns() {
 		
-		$this->comments_list_table = _get_list_table( 'WP_Comments_List_Table' );
-		
 		// If we don't do this, it will show the Admin Avatar twice. This does not appear to happen with anything else
-		remove_filter( 'comment_author', array( $this->comments_list_table, 'floated_admin_avatar' ) );
+		remove_filter( 'comment_author', array( PYISCOMMENTASSIGNMENT()->comments_list_table, 'floated_admin_avatar' ) );
 		
-		$columns = $this->comments_list_table->get_columns();
+		$columns = PYISCOMMENTASSIGNMENT()->comments_list_table->get_columns();
 		
 		global $pagenow;
 		
+		global $pyis_edit_comments_ajax;
+		
+		// Allow AJAX for Edit Comments to go through
 		if ( ! is_admin() ||
-		   $pagenow !== 'edit-comments.php' ) return $columns;
+		   ( $pagenow !== 'edit-comments.php' && ! $pyis_edit_comments_ajax ) ) return $columns;
+		
+		// Reset
+		$pyis_edit_comments_ajax = false;
 		
 		$columns['assigned_to'] = __( 'Assigned To', 'pyis-comment-assignment' );
 		
@@ -223,6 +231,11 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		if ( ! isset( $_POST['assigned_to'] ) || 
 		   empty( $_POST['assigned_to'] ) ) {
 			$delete = delete_comment_meta( $comment_id, 'assigned_to' );
+		}
+		
+		if ( isset( $_POST['assigned_to'] ) ) {
+			global $pyis_edit_comments_ajax;
+			$pyis_edit_comments_ajax = true;
 		}
 		
 		$success = update_comment_meta( $comment_id, 'assigned_to', $_POST['assigned_to'] );

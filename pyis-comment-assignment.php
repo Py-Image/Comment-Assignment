@@ -22,6 +22,8 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 	 */
 	final class PYIS_Comment_Assignment {
 		
+		public $comments_list_table;
+		
 		/**
 		 * @var			PYIS_Comment_Assignment $plugin_data Holds Plugin Header Info
 		 * @since		1.0.0
@@ -74,6 +76,8 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 			
 			// Register our CSS/JS for the whole plugin
 			add_action( 'init', array( $this, 'register_scripts' ) );
+			
+			add_action( 'admin_init', array( $this, 'init_comments_table' ) );
 			
 		}
 
@@ -166,6 +170,8 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 				
 				require_once PYIS_Comment_Assignment_DIR . 'core/admin/class-pyis-comment-assignment-edit-comments.php';
 				
+				require_once PYIS_Comment_Assignment_DIR . 'core/admin/class-pyis-comment-assignment-assigned-comments.php';
+				
 			}
 			
 		}
@@ -239,6 +245,20 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 				'pyiscommentassignment',
 				apply_filters( 'pyis_comment_assignment_localize_admin_script', array() )
 			);
+			
+		}
+		
+		/**
+		 * Making the methods for the Comments List Table available like this prevents us calling it more than this one extra time
+		 * Calling it more than WP expects causes some oddities with columns (Which this plugin addresses), but calling it even more times would be asking for trouble
+		 * 
+		 * @access		public
+		 * @since		{{VERSION}}
+		 * @return		void
+		 */
+		public function init_comments_table() {
+			
+			$this->comments_list_table = _get_list_table( 'WP_Comments_List_Table' );
 			
 		}
 		
