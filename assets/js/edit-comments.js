@@ -1,2 +1,2 @@
-"use strict";!function(n){n(document).on("ready",function(){n("#assigned-to-select").on("change",function(){n("#assigned-to").val(n(this).val())})})}(jQuery);
+"use strict";!function(e){e(document).on("ready",function(){e("#the-comment-list").on("click",".comment-inline",function(n){n.preventDefault();var t=e(this),i=t.data("commentId"),o=e("#replyrow"),c=e("#inline-"+i);e("#assigned-to-select",o).val(e("div.assigned-to",c).text()).trigger("change")}),e("#assigned-to-select").on("change",function(){e("#assigned-to").val(e(this).val())})})}(jQuery);
 //# sourceMappingURL=edit-comments.js.map
