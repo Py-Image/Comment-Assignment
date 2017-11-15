@@ -112,7 +112,11 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 		// This HTML is how it starts and it should be unique enough to prevent removal of things we don't want to remove
 		$edit_comments = preg_replace( '#<div class="clear"><\/div><\/div><!-- wpbody-content -->(?:.*)#is', '', $edit_comments );
 		
+		// Change Title to "Assigned Comments", regardless of Langugage setting
 		$edit_comments = preg_replace( '#<h1>(?:.*?)' . __( 'Comments' ) . '(?:.*?)<\/h1>#is', '<h1>' . __( 'Assigned Comments' . '</h1>', 'pyis-comment-assignment' ), $edit_comments );
+		
+		// Add a hidden Input with our Page Slug so that any Searching or other Form Interactions always return us to our page
+		$edit_comments = preg_replace( '#<form id="comments-form" method="get">#is', '$0<input type="hidden" name="page" value="assigned_comments" />', $edit_comments );
 		
 		// Add back in the JavaScript
 		foreach( $script_matches[0] as $script ) {
