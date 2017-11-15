@@ -90,7 +90,7 @@ final class PYIS_Comment_Assignment_Reply_As {
 		$select_field .= '</select>';
 		
 		// The Select Field is just for ease of use. The hidden Input field is what actually gets submitted by WordPress via AJAX
-		$insert = '<span class="reply-as-container alignright">';
+		$insert = '<span class="reply-as-container alignright hidden">';
 			$insert .= '<label for="reply-as">' . __( 'Reply As', 'pyis-comment-assignment' ) . '</label>';
 			$insert .= $select_field;
 			$insert .= '<input type="hidden" id="reply-as" name="reply_as" value="" />';
@@ -113,8 +113,6 @@ final class PYIS_Comment_Assignment_Reply_As {
 		
 		// Swap the Reply Submit Buttons if the Object Buffer with our modified one
 		$content = preg_replace( '#<p id="replysubmit"(?:[^>]*)>(.+?)<\/p>#is', $injected_buttons, $content );
-		
-		file_put_contents( __DIR__ . '/content.txt', $content );
 
 		// Echo out the modified Object Buffer. This works kind of like a Filter, but it is technically an Action
 		echo $content;
