@@ -172,6 +172,8 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 				
 				require_once PYIS_Comment_Assignment_DIR . 'core/admin/class-pyis-comment-assignment-assigned-comments.php';
 				
+				require_once PYIS_Comment_Assignment_DIR . 'core/admin/class-pyis-comment-assignment-reply-as.php';
+				
 			}
 			
 		}
