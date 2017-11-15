@@ -105,11 +105,21 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 		include ABSPATH . '/wp-admin/edit-comments.php';
 		$edit_comments = ob_get_clean();
 		
+		// Extract all JavaScript from the page so we can preserve it
+		$match = preg_match_all( '#<script(?:.+?)>(?:.+?)<\/script>#is', $edit_comments, $script_matches );
+		
 		// /wp-admin/admin-footer.php is at the very end of the file and we need to remove it
 		// This HTML is how it starts and it should be unique enough to prevent removal of things we don't want to remove
 		$edit_comments = preg_replace( '#<div class="clear"><\/div><\/div><!-- wpbody-content -->(?:.*)#is', '', $edit_comments );
 		
 		$edit_comments = preg_replace( '#<h1>(?:.*?)' . __( 'Comments' ) . '(?:.*?)<\/h1>#is', '<h1>' . __( 'Assigned Comments' . '</h1>', 'pyis-comment-assignment' ), $edit_comments );
+		
+		// Add back in the JavaScript
+		foreach( $script_matches[0] as $script ) {
+			
+			$edit_comments = $edit_comments . $script;
+			
+		}
 		
 		echo $edit_comments;
 		
