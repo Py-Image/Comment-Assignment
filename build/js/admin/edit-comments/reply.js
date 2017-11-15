@@ -9,15 +9,31 @@
 
 			var $el = $( this );
 			
-			var $editRow = $( '#replyrow' );
+			var $replyRow = $( '#replyrow' );
 			
 			// Toggle visibility of the Reply As field, since Reply and Quick Edit share the same editor technically
 			if ( $el.data( 'action' ) !== 'replyto' ) {
-				$( '.reply-as-container', $editRow ).addClass( 'hidden' );
+				$( '.reply-as-container', $replyRow ).addClass( 'hidden' );
 			}
 			else {
-				$( '.reply-as-container', $editRow ).removeClass( 'hidden' );
+				
+				var $select = $( '#reply-as-select', $replyRow ),
+					$input = $( '#reply-as', $replyRow );
+				
+				// Restore to default values on each open
+				$select.val( $select.data( 'default' ) );
+				$input.val( $select.data( 'default' ) );
+				
+				$( '.reply-as-container', $replyRow ).removeClass( 'hidden' );
+				
 			}
+
+		} );
+		
+		$( '#reply-as-select' ).on( 'change', function() {
+
+			// Set value of Hidden Input to value of the Select
+			$( '#reply-as' ).val( $( this ).val() );
 
 		} );
 		

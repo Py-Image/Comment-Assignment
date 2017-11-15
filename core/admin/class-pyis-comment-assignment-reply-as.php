@@ -59,7 +59,7 @@ final class PYIS_Comment_Assignment_Reply_As {
 		 */
 		$default_user_id = apply_filters( 'pyis_comment_assignment_reply_as_default', 1 );
 		
-		$select_field .= '<select id="assigned-to-select">';
+		$select_field .= '<select id="reply-as-select" data-default="' . $default_user_id . '">';
 			foreach ( $users as $user_id => $user_data ) {
 				$select_field .= '<option value="' . $user_id . '"' . ( ( (int) $user_id == $default_user_id ) ? ' selected' : '' ) . '>' . $user_data->user_login . '</option>';
 			}
@@ -69,7 +69,7 @@ final class PYIS_Comment_Assignment_Reply_As {
 		$insert = '<span class="reply-as-container alignright hidden">';
 			$insert .= '<label for="reply-as">' . __( 'Reply As', 'pyis-comment-assignment' ) . '</label>';
 			$insert .= $select_field;
-			$insert .= '<input type="hidden" id="reply-as" name="reply_as" value="" />';
+			$insert .= '<input type="hidden" id="reply-as" name="reply_as" value="' . $default_user_id . '" />';
 		$insert .= '</span>';
 		
 		// Grab our Reply Submit Buttons from the Object Buffer
