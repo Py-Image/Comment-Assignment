@@ -25,6 +25,10 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 		
 		add_filter( 'comment_status_links', array( $this, 'comment_status_links' ) );
 		
+		add_action( 'pre_get_comments', array( $this, 'pre_get_comments' ) );
+		
+		add_filter( 'wp_count_comments', array( $this, 'wp_count_comments' ) );
+		
 	}
 	
 	/**
@@ -113,7 +117,7 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 		$edit_comments = preg_replace( '#<div class="clear"><\/div><\/div><!-- wpbody-content -->(?:.*)#is', '', $edit_comments );
 		
 		// Change Title to "Assigned Comments", regardless of Langugage setting
-		$edit_comments = preg_replace( '#<h1>(?:.*?)' . __( 'Comments' ) . '(?:.*?)<\/h1>#is', '<h1>' . __( 'Assigned Comments' . '</h1>', 'pyis-comment-assignment' ), $edit_comments );
+		$edit_comments = preg_replace( '#<h1>(.*?)' . __( 'Comments' ) . '(.*?)<\/h1>#is', '<h1>$1' . __( 'Assigned Comments' . '$2</h1>', 'pyis-comment-assignment' ), $edit_comments );
 		
 		// Add a hidden Input with our Page Slug so that any Searching or other Form Interactions always return us to our page
 		$edit_comments = preg_replace( '#<form id="comments-form" method="get">#is', '$0<input type="hidden" name="page" value="assigned_comments" />', $edit_comments );
@@ -126,6 +130,140 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 		}
 		
 		echo $edit_comments;
+		
+	}
+	
+	/**
+	 * Restrict the Assigned Comments Page to only querying comments Assigned to that User
+	 * 
+	 * @param		object $query WP_Comment_Query
+	 *                       
+	 * @access		public
+	 * @since		{{VERSION}}
+	 * @return		void
+	 */
+	public function pre_get_comments( $query ) {
+		
+		global $current_screen;
+		
+		if ( $current_screen->id !== 'assigned-comments' ) return;
+			
+		$query->meta_query = new WP_Meta_Query( array(
+			'relation' => 'OR',
+			array(
+				'key' => 'assigned_to',
+				'value' => get_current_user_id(),
+				'compare' => '=',
+			),
+		) );
+		
+	}
+	
+	/**
+	 * Filter wp_count_comments() on Assigned Comments pages so that it only counts for Assigned Comments
+	 * This only changes the numbers in the "Views" row above the Table. Every other instance of the numbers is correct by default
+	 * 
+	 * @param		array   Return an empty Array to let WP handle it the way it does by default
+	 * @param		integer Post ID to check for Assigned Comments in. Leave 0 for all Posts.
+	 *                                                                              
+	 * @access		public
+	 * @since		{{VERSION}}
+	 * @return		object  Comment Stats object
+	 */
+	public function wp_count_comments( $comment_stats = array(), $post_id = 0 ) {
+		
+		global $current_screen;
+		
+		// Proceed as normal if not on the Assigned Comments screen
+		if ( $current_screen->id !== 'assigned-comments' ) return $comment_stats;
+		
+		$count = wp_cache_get( "comments-assigned-{$post_id}", 'counts' );
+		if ( false !== $count ) {
+			return $count;
+		}
+		
+		$stats = $this->get_comment_count( $post_id );
+		
+		$stats['moderated'] = $stats['awaiting_moderation'];
+		unset( $stats['awaiting_moderation'] );
+		
+		$stats_object = (object) $stats;
+		
+		wp_cache_set( "comments-assigned-{$post_id}", $stats_object, 'counts' );
+		
+		return $stats_object;
+		
+	}
+	
+	/**
+	 * Gets the Comment Count for Assigned Comments to a User
+	 * This is basically a carbon copy of get_comment_count() in WP Core, but it had no way to modify the SQL to match what we needed
+	 * 
+	 * @param		integer $post_id Post ID to check Assigned Comments for. If 0, it checks all Posts
+	 * @param		integer $user_id User ID to check Assigned Comments. If 0, it grabs the current User ID
+	 *                                                                                              
+	 * @access		private
+	 * @since		{{VERSION}}
+	 * @return		array   Comment Count data used by wp_count_comments()
+	 */
+	private function get_comment_count( $post_id = 0, $user_id = false ) {
+		
+		global $wpdb;
+
+		$post_id = (int) $post_id;
+		$user_id = ( ! $user_id ) ? get_current_user_id() : (int) $user_id;
+
+		$where = $wpdb->prepare( "WHERE {$wpdb->commentmeta}.meta_key = 'assigned_to' AND {$wpdb->commentmeta}.meta_value = '%d'", $user_id );
+		if ( $post_id > 0 ) {
+			$where .= $wpdb->prepare("AND {$wpdb->comments}.comment_post_ID = %d", $post_id);
+		}
+
+		$totals = (array) $wpdb->get_results("
+			SELECT comment_approved, COUNT( * ) AS total
+			FROM {$wpdb->comments}
+			LEFT JOIN {$wpdb->commentmeta} ON {$wpdb->comments}.comment_ID = {$wpdb->commentmeta}.comment_id
+			{$where}
+			GROUP BY comment_approved
+		", ARRAY_A);
+
+		$comment_count = array(
+			'approved'            => 0,
+			'awaiting_moderation' => 0,
+			'spam'                => 0,
+			'trash'               => 0,
+			'post-trashed'        => 0,
+			'total_comments'      => 0,
+			'all'                 => 0,
+		);
+
+		foreach ( $totals as $row ) {
+			switch ( $row['comment_approved'] ) {
+				case 'trash':
+					$comment_count['trash'] = $row['total'];
+					break;
+				case 'post-trashed':
+					$comment_count['post-trashed'] = $row['total'];
+					break;
+				case 'spam':
+					$comment_count['spam'] = $row['total'];
+					$comment_count['total_comments'] += $row['total'];
+					break;
+				case '1':
+					$comment_count['approved'] = $row['total'];
+					$comment_count['total_comments'] += $row['total'];
+					$comment_count['all'] += $row['total'];
+					break;
+				case '0':
+					$comment_count['awaiting_moderation'] = $row['total'];
+					$comment_count['total_comments'] += $row['total'];
+					$comment_count['all'] += $row['total'];
+					break;
+				default:
+					break;
+			}
+		}
+
+		return $comment_count;
 		
 	}
 	
