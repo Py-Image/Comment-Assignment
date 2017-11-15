@@ -195,6 +195,14 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		// Swap the <fieldset> if the Object Buffer with our modified one
 		$content = preg_replace( '#<fieldset class="comment-reply"([^>]*)>(.*)<\/fieldset>#is', $injected_fields, $content );
+		
+		/**
+		 * Allow modification of the Edit Comments page
+		 * 
+		 * @since		{{VERSION}}
+		 * @return		string HTML
+		 */
+		$content = apply_filters( 'pyis_comment_assignment_edit_comments_html', $content );
 
 		// Echo out the modified Object Buffer. This works kind of like a Filter, but it is technically an Action
 		echo $content;

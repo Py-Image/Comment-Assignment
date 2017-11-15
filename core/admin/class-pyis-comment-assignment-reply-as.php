@@ -21,46 +21,22 @@ final class PYIS_Comment_Assignment_Reply_As {
 	 */
 	function __construct() {
 		
-		// Inject Reply As into Reply screen
-		add_action( 'init', array( $this, 'start_page_capture' ), 99 );
-		add_action( 'shutdown', array( $this, 'add_assignment_to_quick_edit' ), 0 );
+		add_filter( 'pyis_comment_assignment_edit_comments_html', array( $this, 'add_reply_as_field' ) );
+		add_filter( 'pyis_comment_assignment_assigned_comments_html', array( $this, 'add_reply_as_field' ) );
 		
 	}
 	
 	/**
-	 * If we're on the generic Edit Comments screen, start an Object Buffer
+	 * Since we've done the dirty work on the Edit Comments and Assigned Comments pages, we have a reasonable place to Filter
+	 * Since this goes on both pages, may as well DRY it up a bit
 	 * 
+	 * @param		string $page_content HTML
+	 *                              
 	 * @access		public
 	 * @since		{{VERSION}}
-	 * @return		void
+	 * @return		string HTML
 	 */
-	public function start_page_capture() {
-		
-		global $pagenow;
-		
-		if ( is_admin() && 
-		   $pagenow == 'edit-comments.php' ) {
-			ob_start();
-		}
-		
-	}
-	
-	/**
-	 * WordPress has literally no way to add to the Quick Edit screen for Comments
-	 * This is the best that can be done while hopefully working into the foreseeable future
-	 * We run some Regex after the Page has loaded on our Object Buffer and inject the modified <fieldset> into the Page.
-	 * By doing it this way, we don't have to worry about JavaScript having any kind of nasty delay
-	 * 
-	 * @access		public
-	 * @since		{{VERSION}}
-	 * @return		void
-	 */
-	public function add_assignment_to_quick_edit() {
-		
-		global $pagenow;
-		
-		if ( ! is_admin() ||
-		   $pagenow !== 'edit-comments.php' ) return;
+	public function add_reply_as_field( $page_content ) {
 		
 		// Grab all the Users and build a Select Field
 		$user_query = new WP_User_Query( array(
@@ -95,14 +71,11 @@ final class PYIS_Comment_Assignment_Reply_As {
 			$insert .= $select_field;
 			$insert .= '<input type="hidden" id="reply-as" name="reply_as" value="" />';
 		$insert .= '</span>';
-
-		// Grab our Object Buffer
-		$content = ob_get_clean();
 		
 		// Grab our Reply Submit Buttons from the Object Buffer
 		// The "s" at the end is the DOT-ALL modifier. This allows us to match over line-breaks
 		// Here's a good explaination: https://stackoverflow.com/a/2240607
-		$match = preg_match( '#<p id="replysubmit"(?:[^>]*)>(.+?)<\/p>#is', $content, $matches );
+		$match = preg_match( '#<p id="replysubmit"(?:[^>]*)>(.+?)<\/p>#is', $page_content, $matches );
 		
 		// Remove any Line Breaks from the Reply Submit Buttons we just grabbed
 		// If we remove the Line Breaks from the Object Buffer itself it produces errors for some reason
@@ -112,10 +85,9 @@ final class PYIS_Comment_Assignment_Reply_As {
 		$injected_buttons = substr_replace( $buttons, $insert . '<span class="waiting', strpos( $buttons, '<span class="waiting' ), 20 );
 		
 		// Swap the Reply Submit Buttons if the Object Buffer with our modified one
-		$content = preg_replace( '#<p id="replysubmit"(?:[^>]*)>(.+?)<\/p>#is', $injected_buttons, $content );
+		$page_content = preg_replace( '#<p id="replysubmit"(?:[^>]*)>(.+?)<\/p>#is', $injected_buttons, $page_content );
 
-		// Echo out the modified Object Buffer. This works kind of like a Filter, but it is technically an Action
-		echo $content;
+		return $page_content;
 		
 	}
 	

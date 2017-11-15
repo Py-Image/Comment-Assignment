@@ -129,6 +129,14 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 			
 		}
 		
+		/**
+		 * Allow modification of the Assigned Comments page
+		 * 
+		 * @since		{{VERSION}}
+		 * @return		string HTML
+		 */
+		$edit_comments = apply_filters( 'pyis_comment_assignment_assigned_comments_html', $edit_comments );
+		
 		echo $edit_comments;
 		
 	}
