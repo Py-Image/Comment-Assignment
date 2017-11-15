@@ -9,11 +9,10 @@
 
 			var $el = $( this );
 			
-			var comment_id = $el.data( 'commentId' ),
-				$editRow = $( '#replyrow' ),
-				$rowData = $( '#inline-' + comment_id );
+			var $editRow = $( '#replyrow' ),
+				$row = $el.closest( 'tr.comment' );
 			
-			$( '#assigned-to-select', $editRow ).val( $( 'div.assigned-to', $rowData ).text() ).trigger( 'change' );
+			$( '#assigned-to-select', $editRow ).val( $row.find( 'td.assigned_to div.assigned-to' ).text().trim() ).trigger( 'change' );
 
 		} );
 

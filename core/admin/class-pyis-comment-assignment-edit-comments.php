@@ -103,6 +103,10 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		<a href="<?php echo admin_url( 'user-edit.php?user_id=' . $user_id ); ?>" title="<?php echo $user_data->display_name; ?>">
 			<?php echo $user_data->display_name; ?>
 		</a>
+
+		<div class="assigned-to hidden">
+			<?php echo get_comment_meta( $comment_id, 'assigned_to', true ); ?>
+		</div>
 		
 		<?php 
 		
@@ -191,24 +195,6 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		// Swap the <fieldset> if the Object Buffer with our modified one
 		$content = preg_replace( '#<fieldset class="comment-reply"([^>]*)>(.*)<\/fieldset>#is', $injected_fields, $content );
-		
-		// Now we have to also inject the saved data in a location that the Quick Edit screen can understand
-		// It is stored in a hidden <div> within the Comments Column that WP Core gives us no way of accessing normally
-		$match = preg_match_all( '#<div id="inline-(\d)"(?:[^>]*)>#i', $content, $matches );
-		
-		// This now stores our Comment IDs. We will have to inject our value into each container
-		$comment_ids = $matches[1];
-		
-		foreach ( $comment_ids as $comment_id ) {
-			
-			$insert = '<div class="assigned-to">';
-				$insert .= get_comment_meta( $comment_id, 'assigned_to', true );
-			$insert .= '</div>';
-			
-			// Prepend the <div> holding the User ID value to the beginning of the #inline-<comment_id> <div>
-			$content = preg_replace( '#<div id="inline-' . $comment_id . '"(?:[^>]*)>#i', "$0$insert", $content );
-			
-		}
 
 		// Echo out the modified Object Buffer. This works kind of like a Filter, but it is technically an Action
 		echo $content;
