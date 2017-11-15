@@ -224,9 +224,6 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		$comment_id = (int) $_POST['comment_ID'];
 		if ( ! current_user_can( 'edit_comment', $comment_id ) )
 			wp_die( -1 );
-
-		if ( '' == $_POST['content'] )
-			wp_die( __( 'ERROR: please type a comment.' ) );
 		
 		// Allow unassignment
 		if ( isset( $_POST['assigned_to'] ) && 

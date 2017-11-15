@@ -24,6 +24,8 @@ final class PYIS_Comment_Assignment_Reply_As {
 		add_filter( 'pyis_comment_assignment_edit_comments_html', array( $this, 'add_reply_as_field' ) );
 		add_filter( 'pyis_comment_assignment_assigned_comments_html', array( $this, 'add_reply_as_field' ) );
 		
+		add_action( 'wp_ajax_replyto-comment', array( $this, 'wp_ajax_replyto_comment' ), 1 );
+		
 	}
 	
 	/**
@@ -88,6 +90,31 @@ final class PYIS_Comment_Assignment_Reply_As {
 		$page_content = preg_replace( '#<p id="replysubmit"(?:[^>]*)>(.+?)<\/p>#is', $injected_buttons, $page_content );
 
 		return $page_content;
+		
+	}
+	
+	/**
+	 * Override the Current User for the AJAX Call made for Replying from the WP Dashboard
+	 * 
+	 * @access		public
+	 * @since		{{VERSION}}
+	 * @return		void
+	 */
+	public function wp_ajax_replyto_comment() {
+		
+		global $current_user;
+		
+		$current_user = false;
+		
+		if ( ! isset( $_POST['reply_as'] ) ) return;
+		
+		// Temporarily fake our Current User
+		wp_set_current_user( (int) $_POST['reply_as'] );
+		
+		// Here were are forcing our Nonce to be valid after changing the Current User
+		// This is necessary as the one passed with the Form is for the Logged in User, not the one you're replying as
+		$force_nonce = wp_create_nonce( 'replyto-comment' );
+		$_REQUEST['_ajax_nonce-replyto-comment'] = $force_nonce;
 		
 	}
 	
