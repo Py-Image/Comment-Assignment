@@ -26,7 +26,7 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 	function __construct() {
 		
 		add_filter( 'manage_edit-comments_columns', array( $this, 'get_columns' ) );
-		add_filter( 'manage_assigned-comments_columns', array( $this, 'get_columns' ) );
+		add_filter( 'manage_assigned-to-me_columns', array( $this, 'get_columns' ) );
 		
 		add_action( 'manage_comments_custom_column', array( $this, 'assign_column' ), 10, 2 );
 		
@@ -66,7 +66,7 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		// Allow AJAX for Edit Comments to go through but disallow the Assigned Column from showing on the Assigned Comments Page
 		if ( ! is_admin() ||
-			$current_screen->id == 'assigned-comments' || 
+			$current_screen->id == 'assigned-to-me' || 
 		   ( $pagenow !== 'edit-comments.php' && ! $pyis_edit_comments_ajax ) ) return $columns;
 		
 		// Reset
@@ -149,7 +149,7 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		   $pagenow !== 'edit-comments.php' ) return;
 		
 		// We do not need the additions on the Assigned Comments Sub-Page
-		if ( $current_screen->id == 'assigned-comments' ) echo ob_get_clean();
+		if ( $current_screen->id == 'assigned-to-me' ) echo ob_get_clean();
 		
 		// Grab all the Users and build a Select Field
 		$user_query = new WP_User_Query( apply_filters( 'pyis_comment_assignment_assignment_dropdown_query', array(

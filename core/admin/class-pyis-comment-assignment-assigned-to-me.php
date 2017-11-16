@@ -10,10 +10,10 @@
 
 defined( 'ABSPATH' ) || die();
 
-final class PYIS_Comment_Assignment_Assigned_Comments {
+final class PYIS_Comment_Assignment_assigned_to_me {
 	
 	/**
-	 * PYIS_Comment_Assignment_Assigned_Comments constructor.
+	 * PYIS_Comment_Assignment_assigned_to_me constructor.
 	 * 
 	 * @since		{{VERSION}}
 	 */
@@ -42,9 +42,9 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 		
 		global $current_screen;
 		
-		if ( $current_screen->id == 'comments_page_assigned_comments' ) {
+		if ( $current_screen->id == 'comments_page_assigned_to_me' ) {
 		
-			$current_screen->id = 'assigned-comments';
+			$current_screen->id = 'assigned-to-me';
 			
 		}
 		
@@ -61,10 +61,10 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 		
 		add_submenu_page(
 			'edit-comments.php',
-			__( 'Assigned Comments', 'pyis-comment-assignment' ),
-			__( 'Assigned Comments', 'pyis-comment-assignment' ),
+			__( 'Assigned to Me', 'pyis-comment-assignment' ),
+			__( 'Assigned to Me', 'pyis-comment-assignment' ),
 			'edit_posts', // This is what is actually checked for the Comments Menu to appear in WP Core
-			'assigned_comments',
+			'assigned_to_me',
 			array( $this, 'submenu_page' )
 		);
 		
@@ -84,11 +84,11 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 		global $current_screen;
 		
 		if ( ! is_admin() || 
-		   $current_screen->id !== 'assigned-comments' ) return $status_links;
+		   $current_screen->id !== 'assigned-to-me' ) return $status_links;
 		
 		foreach ( $status_links as &$status_link ) {
 			
-			$status_link = str_replace( "edit-comments.php?", "edit-comments.php?page=assigned_comments&", $status_link );
+			$status_link = str_replace( "edit-comments.php?", "edit-comments.php?page=assigned_to_me&", $status_link );
 			
 		}
 		
@@ -117,10 +117,10 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 		$edit_comments = preg_replace( '#<div class="clear"><\/div><\/div><!-- wpbody-content -->(?:.*)#is', '', $edit_comments );
 		
 		// Change Title to "Assigned Comments", regardless of Langugage setting
-		$edit_comments = preg_replace( '#<h1>(.*?)' . __( 'Comments' ) . '(.*?)<\/h1>#is', '<h1>$1' . __( 'Assigned Comments' . '$2</h1>', 'pyis-comment-assignment' ), $edit_comments );
+		$edit_comments = preg_replace( '#<h1>(.*?)' . __( 'Comments' ) . '(.*?)<\/h1>#is', '<h1>$1' . __( 'Assigned to Me' . '$2</h1>', 'pyis-comment-assignment' ), $edit_comments );
 		
 		// Add a hidden Input with our Page Slug so that any Searching or other Form Interactions always return us to our page
-		$edit_comments = preg_replace( '#<form id="comments-form" method="get">#is', '$0<input type="hidden" name="page" value="assigned_comments" />', $edit_comments );
+		$edit_comments = preg_replace( '#<form id="comments-form" method="get">#is', '$0<input type="hidden" name="page" value="assigned_to_me" />', $edit_comments );
 		
 		// Add back in the JavaScript
 		foreach( $script_matches[0] as $script ) {
@@ -135,7 +135,7 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 		 * @since		{{VERSION}}
 		 * @return		string HTML
 		 */
-		$edit_comments = apply_filters( 'pyis_comment_assignment_assigned_comments_html', $edit_comments );
+		$edit_comments = apply_filters( 'pyis_comment_assignment_assigned_to_me_html', $edit_comments );
 		
 		echo $edit_comments;
 		
@@ -154,7 +154,7 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 		
 		global $current_screen;
 		
-		if ( $current_screen->id !== 'assigned-comments' ) return;
+		if ( $current_screen->id !== 'assigned-to-me' ) return;
 			
 		$query->meta_query = new WP_Meta_Query( array(
 			'relation' => 'OR',
@@ -183,7 +183,7 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 		global $current_screen;
 		
 		// Proceed as normal if not on the Assigned Comments screen
-		if ( $current_screen->id !== 'assigned-comments' ) return $comment_stats;
+		if ( $current_screen->id !== 'assigned-to-me' ) return $comment_stats;
 		
 		$count = wp_cache_get( "comments-assigned-{$post_id}", 'counts' );
 		if ( false !== $count ) {
@@ -277,4 +277,4 @@ final class PYIS_Comment_Assignment_Assigned_Comments {
 	
 }
 
-$instance = new PYIS_Comment_Assignment_Assigned_Comments();
+$instance = new PYIS_Comment_Assignment_assigned_to_me();
