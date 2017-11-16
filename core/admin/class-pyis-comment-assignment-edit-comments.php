@@ -152,11 +152,11 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		if ( $current_screen->id == 'assigned-comments' ) echo ob_get_clean();
 		
 		// Grab all the Users and build a Select Field
-		$user_query = new WP_User_Query( array(
+		$user_query = new WP_User_Query( apply_filters( 'pyis_comment_assignment_assignment_dropdown_query', array(
 			'meta_key' => 'last_name',
 			'orderby' => 'meta_value',
 			'order' => 'ASC'
-		) );
+		) ) );
 		
 		$users = array();
 		$select_field = '';
