@@ -50,7 +50,13 @@ final class PYIS_Comment_Assignment_Reply_As {
 		$users = array();
 		$select_field = '';
 		if ( $user_query->get_total() > 0 ) {
+			
+			// Alter User Query to only have results for Users with the edit_posts Capability
+			// WP_User_Query does not support this
+			PYISCOMMENTASSIGNMENT()->user_query_filter_cap( $user_query, 'edit_posts' );
+			
 			$users += wp_list_pluck( $user_query->get_results(), 'data', 'ID' );
+			
 		}
 		
 		/**

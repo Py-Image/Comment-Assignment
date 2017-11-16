@@ -264,6 +264,33 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 			
 		}
 		
+		/**
+		 * Filters down the results of a User Query to only include those who have a specific Capability
+		 * WP_User_Query by default only supports filtering by Role, which isn't very specific
+		 * 
+		 * @param		object $user_query WP_User_Query Object
+		 * @param		string $cap        Capability to restrict to
+		 * 
+		 * @access		public
+		 * @since		{{VERSION}}
+		 * @return		void
+		 */
+		public function user_query_filter_cap( &$user_query, $cap = 'edit_posts' ) {
+			
+			$has_cap = array_filter( $user_query->get_results(), function( $user ) use ( $cap ) {
+				
+				if ( array_key_exists( $cap, $user->allcaps ) && 
+				   $user->allcaps[ $cap ] === true ) return true;
+				
+				return false;
+				
+			} );
+			
+			$user_query->results = $has_cap;
+			$user_query->total_users = (string) count( $user_query->results );
+			
+		}
+		
 	}
 	
 } // End Class Exists Check
