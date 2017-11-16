@@ -2,7 +2,7 @@
 /**
  * Provides helper functions.
  *
- * @since	  1.0.0
+ * @since	  {{VERSION}}
  *
  * @package	PYIS_Comment_Assignment
  * @subpackage PYIS_Comment_Assignment/core
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Returns the main plugin object
  *
- * @since		1.0.0
+ * @since		{{VERSION}}
  *
  * @return		PYIS_Comment_Assignment
  */

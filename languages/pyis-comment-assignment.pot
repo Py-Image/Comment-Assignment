@@ -14,7 +14,31 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: pyis-comment-assignment.php:63
+#: core/admin/class-pyis-comment-assignment-assigned-to-me.php:64, core/admin/class-pyis-comment-assignment-assigned-to-me.php:65, core/admin/class-pyis-comment-assignment-assigned-to-me.php:120
+msgid "Assigned to Me"
+msgstr ""
+
+#: core/admin/class-pyis-comment-assignment-assigned-to-others.php:64, core/admin/class-pyis-comment-assignment-assigned-to-others.php:65, core/admin/class-pyis-comment-assignment-assigned-to-others.php:120
+msgid "Assigned to Others"
+msgstr ""
+
+#: core/admin/class-pyis-comment-assignment-edit-comments.php:74, core/admin/class-pyis-comment-assignment-edit-comments.php:287
+msgid "Assigned To"
+msgstr ""
+
+#: core/admin/class-pyis-comment-assignment-edit-comments.php:174, core/admin/class-pyis-comment-assignment-edit-comments.php:327
+msgid "Select a User"
+msgstr ""
+
+#: core/admin/class-pyis-comment-assignment-edit-comments.php:182
+msgid "Assign"
+msgstr ""
+
+#: core/admin/class-pyis-comment-assignment-reply-as.php:78
+msgid "Reply As"
+msgstr ""
+
+#: pyis-comment-assignment.php:69
 msgctxt "Outdated Dependency Error"
 msgid "%s requires v%s of %s or higher to be installed!"
 msgstr ""

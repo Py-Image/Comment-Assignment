@@ -18,21 +18,25 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 	/**
 	 * Main PYIS_Comment_Assignment class
 	 *
-	 * @since	  1.0.0
+	 * @since	  {{VERSION}}
 	 */
 	final class PYIS_Comment_Assignment {
 		
+		/**
+		 * @var			WP_Comments_List_Table $plugin_data Holds Plugin Header Info
+		 * @since		{{VERSION}}
+		 */
 		public $comments_list_table;
 		
 		/**
-		 * @var			PYIS_Comment_Assignment $plugin_data Holds Plugin Header Info
-		 * @since		1.0.0
+		 * @var			array $plugin_data Holds Plugin Header Info
+		 * @since		{{VERSION}}
 		 */
 		public $plugin_data;
 		
 		/**
-		 * @var			PYIS_Comment_Assignment $admin_errors Stores all our Admin Errors to fire at once
-		 * @since		1.0.0
+		 * @var			array $admin_errors Stores all our Admin Errors to fire at once
+		 * @since		{{VERSION}}
 		 */
 		private $admin_errors;
 
@@ -40,7 +44,7 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 		 * Get active instance
 		 *
 		 * @access	  public
-		 * @since	  1.0.0
+		 * @since	  {{VERSION}}
 		 * @return	  object self::$instance The one true PYIS_Comment_Assignment
 		 */
 		public static function instance() {
@@ -85,7 +89,7 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 		 * Setup plugin constants
 		 *
 		 * @access	  private
-		 * @since	  1.0.0
+		 * @since	  {{VERSION}}
 		 * @return	  void
 		 */
 		private function setup_constants() {
@@ -124,7 +128,7 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 		 * Internationalization
 		 *
 		 * @access	  private 
-		 * @since	  1.0.0
+		 * @since	  {{VERSION}}
 		 * @return	  void
 		 */
 		private function load_textdomain() {
@@ -161,7 +165,7 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 		 * Include different aspects of the Plugin
 		 * 
 		 * @access	  private
-		 * @since	  1.0.0
+		 * @since	  {{VERSION}}
 		 * @return	  void
 		 */
 		private function require_necessities() {
@@ -184,7 +188,7 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 		 * Show admin errors.
 		 * 
 		 * @access	  public
-		 * @since	  1.0.0
+		 * @since	  {{VERSION}}
 		 * @return	  HTML
 		 */
 		public function admin_errors() {
@@ -203,7 +207,7 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 		 * Register our CSS/JS to use later
 		 * 
 		 * @access	  public
-		 * @since	  1.0.0
+		 * @since	  {{VERSION}}
 		 * @return	  void
 		 */
 		public function register_scripts() {
@@ -301,7 +305,7 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
  * The main function responsible for returning the one true PYIS_Comment_Assignment
  * instance to functions everywhere
  *
- * @since	  1.0.0
+ * @since	  {{VERSION}}
  * @return	  \PYIS_Comment_Assignment The one true PYIS_Comment_Assignment
  */
 add_action( 'plugins_loaded', 'pyis_comment_assignment_load' );
