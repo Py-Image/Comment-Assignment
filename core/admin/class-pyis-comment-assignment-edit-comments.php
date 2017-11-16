@@ -147,7 +147,8 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		if ( ! is_admin() ||
 		   $pagenow !== 'edit-comments.php' ) return;
 		
-		// We do not need the additions on the Assigned Comments Sub-Page
+		// We do not need the additions on the Assigned to Me Sub-Page
+		// Because we are allowing the Assigned to Others Sub-Page through, it inherits the below Filter and gets the Reply As Dropdown that way
 		if ( $current_screen->id == 'assigned-to-me' ) echo ob_get_clean();
 		
 		// Grab all the Users and build a Select Field
