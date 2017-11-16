@@ -25,6 +25,7 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		add_filter( 'manage_edit-comments_columns', array( $this, 'get_columns' ) );
 		add_filter( 'manage_assigned-to-me_columns', array( $this, 'get_columns' ) );
+		add_filter( 'manage_assigned-to-others_columns', array( $this, 'get_columns' ) );
 		
 		add_action( 'manage_comments_custom_column', array( $this, 'assign_column' ), 10, 2 );
 		
