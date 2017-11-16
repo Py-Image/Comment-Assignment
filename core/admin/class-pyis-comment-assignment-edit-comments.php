@@ -16,8 +16,6 @@ $pyis_edit_comments_ajax = false;
 
 final class PYIS_Comment_Assignment_Edit_Comments {
 	
-	public $comments_list_table;
-	
 	/**
 	 * PYIS_Comment_Assignment_Edit_Comments constructor.
 	 * 
@@ -64,7 +62,7 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		global $pyis_edit_comments_ajax;
 		
-		// Allow AJAX for Edit Comments to go through but disallow the Assigned Column from showing on the Assigned Comments Page
+		// Allow AJAX for Edit Comments to go through but disallow the Assigned Column from showing on the Assigned to Me Page
 		if ( ! is_admin() ||
 			$current_screen->id == 'assigned-to-me' || 
 		   ( $pagenow !== 'edit-comments.php' && ! $pyis_edit_comments_ajax ) ) return $columns;

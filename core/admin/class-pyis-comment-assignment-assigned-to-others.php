@@ -10,10 +10,10 @@
 
 defined( 'ABSPATH' ) || die();
 
-final class PYIS_Comment_Assignment_Assigned_To_Me {
+final class PYIS_Comment_Assignment_Assigned_To_Others {
 	
 	/**
-	 * PYIS_Comment_Assignment_Assigned_To_Me constructor.
+	 * PYIS_Comment_Assignment_Assigned_To_Others constructor.
 	 * 
 	 * @since		{{VERSION}}
 	 */
@@ -42,9 +42,9 @@ final class PYIS_Comment_Assignment_Assigned_To_Me {
 		
 		global $current_screen;
 		
-		if ( $current_screen->id == 'comments_page_assigned_to_me' ) {
+		if ( $current_screen->id == 'comments_page_assigned_to_others' ) {
 		
-			$current_screen->id = 'assigned-to-me';
+			$current_screen->id = 'assigned-to-others';
 			
 		}
 		
@@ -61,10 +61,10 @@ final class PYIS_Comment_Assignment_Assigned_To_Me {
 		
 		add_submenu_page(
 			'edit-comments.php',
-			__( 'Assigned to Me', 'pyis-comment-assignment' ),
-			__( 'Assigned to Me', 'pyis-comment-assignment' ),
+			__( 'Assigned to Others', 'pyis-comment-assignment' ),
+			__( 'Assigned to Others', 'pyis-comment-assignment' ),
 			'edit_posts', // This is what is actually checked for the Comments Menu to appear in WP Core
-			'assigned_to_me',
+			'assigned_to_others',
 			array( $this, 'submenu_page' )
 		);
 		
@@ -84,11 +84,11 @@ final class PYIS_Comment_Assignment_Assigned_To_Me {
 		global $current_screen;
 		
 		if ( ! is_admin() || 
-		   $current_screen->id !== 'assigned-to-me' ) return $status_links;
+		   $current_screen->id !== 'assigned-to-others' ) return $status_links;
 		
 		foreach ( $status_links as &$status_link ) {
 			
-			$status_link = str_replace( "edit-comments.php?", "edit-comments.php?page=assigned_to_me&", $status_link );
+			$status_link = str_replace( "edit-comments.php?", "edit-comments.php?page=assigned_to_others&", $status_link );
 			
 		}
 		
@@ -117,10 +117,10 @@ final class PYIS_Comment_Assignment_Assigned_To_Me {
 		$edit_comments = preg_replace( '#<div class="clear"><\/div><\/div><!-- wpbody-content -->(?:.*)#is', '', $edit_comments );
 		
 		// Change Title to "Assigned Comments", regardless of Langugage setting
-		$edit_comments = preg_replace( '#<h1>(.*?)' . __( 'Comments' ) . '(.*?)<\/h1>#is', '<h1>$1' . __( 'Assigned to Me', 'pyis-comment-assignment' ) . '$2</h1>', $edit_comments );
+		$edit_comments = preg_replace( '#<h1>(.*?)' . __( 'Comments' ) . '(.*?)<\/h1>#is', '<h1>$1' . __( 'Assigned to Others', 'pyis-comment-assignment' ) . '$2</h1>', $edit_comments );
 		
 		// Add a hidden Input with our Page Slug so that any Searching or other Form Interactions always return us to our page
-		$edit_comments = preg_replace( '#<form id="comments-form" method="get">#is', '$0<input type="hidden" name="page" value="assigned_to_me" />', $edit_comments );
+		$edit_comments = preg_replace( '#<form id="comments-form" method="get">#is', '$0<input type="hidden" name="page" value="assigned_to_others" />', $edit_comments );
 		
 		// Add back in the JavaScript
 		foreach( $script_matches[0] as $script ) {
@@ -135,7 +135,7 @@ final class PYIS_Comment_Assignment_Assigned_To_Me {
 		 * @since		{{VERSION}}
 		 * @return		string HTML
 		 */
-		$edit_comments = apply_filters( 'pyis_comment_assignment_assigned_to_me_html', $edit_comments );
+		$edit_comments = apply_filters( 'pyis_comment_assignment_assigned_to_others_html', $edit_comments );
 		
 		echo $edit_comments;
 		
@@ -154,14 +154,14 @@ final class PYIS_Comment_Assignment_Assigned_To_Me {
 		
 		global $current_screen;
 		
-		if ( $current_screen->id !== 'assigned-to-me' ) return;
+		if ( $current_screen->id !== 'assigned-to-others' ) return;
 			
 		$query->meta_query = new WP_Meta_Query( array(
 			'relation' => 'OR',
 			array(
 				'key' => 'assigned_to',
 				'value' => get_current_user_id(),
-				'compare' => '=',
+				'compare' => '!=',
 			),
 		) );
 		
@@ -185,9 +185,9 @@ final class PYIS_Comment_Assignment_Assigned_To_Me {
 		$user_id = get_current_user_id();
 		
 		// Proceed as normal if not on the Assigned Comments screen
-		if ( $current_screen->id !== 'assigned-to-me' ) return $comment_stats;
+		if ( $current_screen->id !== 'assigned-to-others' ) return $comment_stats;
 		
-		$count = wp_cache_get( "comments-assigned-me-{$user_id}-{$post_id}", 'counts' );
+		$count = wp_cache_get( "comments-assigned-others-{$user_id}-{$post_id}", 'counts' );
 		if ( false !== $count ) {
 			return $count;
 		}
@@ -199,14 +199,14 @@ final class PYIS_Comment_Assignment_Assigned_To_Me {
 		
 		$stats_object = (object) $stats;
 		
-		wp_cache_set( "comments-assigned-me-{$user_id}-{$post_id}", $stats_object, 'counts' );
+		wp_cache_set( "comments-assigned-others-{$user_id}-{$post_id}", $stats_object, 'counts' );
 		
 		return $stats_object;
 		
 	}
 	
 	/**
-	 * Gets the Comment Count for Assigned Comments to a User
+	 * Gets the Comment Count for Assigned Comments not assigned to the Current User
 	 * This is basically a carbon copy of get_comment_count() in WP Core, but it had no way to modify the SQL to match what we needed
 	 * 
 	 * @param		integer $post_id Post ID to check Assigned Comments for. If 0, it checks all Posts
@@ -223,7 +223,7 @@ final class PYIS_Comment_Assignment_Assigned_To_Me {
 		$post_id = (int) $post_id;
 		$user_id = ( ! $user_id ) ? get_current_user_id() : (int) $user_id;
 
-		$where = $wpdb->prepare( "WHERE {$wpdb->commentmeta}.meta_key = 'assigned_to' AND {$wpdb->commentmeta}.meta_value = '%d'", $user_id );
+		$where = $wpdb->prepare( "WHERE {$wpdb->commentmeta}.meta_key = 'assigned_to' AND {$wpdb->commentmeta}.meta_value != '%d'", $user_id );
 		if ( $post_id > 0 ) {
 			$where .= $wpdb->prepare("AND {$wpdb->comments}.comment_post_ID = %d", $post_id);
 		}
@@ -279,4 +279,4 @@ final class PYIS_Comment_Assignment_Assigned_To_Me {
 	
 }
 
-$instance = new PYIS_Comment_Assignment_Assigned_To_Me();
+$instance = new PYIS_Comment_Assignment_Assigned_To_Others();
