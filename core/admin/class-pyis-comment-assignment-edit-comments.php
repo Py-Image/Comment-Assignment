@@ -263,6 +263,7 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		if ( ! is_admin() ||
 		   $pagenow !== 'edit-comments.php' ) return;
 		
+		wp_enqueue_style( 'pyis-comment-assignment-admin' );
 		wp_enqueue_script( 'pyis-comment-assignment-admin-edit-comments' );
 		
 	}
