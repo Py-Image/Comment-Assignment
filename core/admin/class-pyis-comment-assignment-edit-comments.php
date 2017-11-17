@@ -132,7 +132,7 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 	/**
 	 * WordPress has literally no way to add to the Quick Edit screen for Comments
 	 * This is the best that can be done while hopefully working into the foreseeable future
-	 * We run some Regex after the Page has loaded on our Object Buffer and inject the modified <fieldset> into the Page.
+	 * We run some Regex after the Page has loaded on our Object Buffer and inject our Field into the Page.
 	 * By doing it this way, we don't have to worry about JavaScript having any kind of nasty delay
 	 * 
 	 * @access		public
@@ -182,25 +182,13 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 			$insert .= '<label for="assigned-to">' . __( 'Assign', 'pyis-comment-assignment' ) . '</label>';
 			$insert .= $select_field;
 			$insert .= '<input type="hidden" id="assigned-to" name="assigned_to" value="" />';
-		$insert .= '</div>';
+		// Closing </div> provided by the Author-URL field
 
 		// Grab our Object Buffer
 		$content = ob_get_clean();
 		
-		// Grab our <fieldset> from the Object Buffer
-		// The "s" at the end is the DOT-ALL modifier. This allows us to match over line-breaks
-		// Here's a good explaination: https://stackoverflow.com/a/2240607
-		$match = preg_match( '#<fieldset class="comment-reply"(?:[^>]*)>(.*)<\/fieldset>#is', $content, $matches );
-		
-		// Remove any Line Breaks from the <fieldset> we just grabbed
-		// If we remove the Line Breaks from the Object Buffer itself it produces errors for some reason
-		$fields = preg_replace( "/\r|\n/", "", $matches[0] );
-		
-		// Place all of our injected fields after the last </div> in the <fieldset>
-		$injected_fields = substr_replace( $fields, "{$insert}</div>", strrpos( $fields, '</div>' ), 6 );
-		
-		// Swap the <fieldset> if the Object Buffer with our modified one
-		$content = preg_replace( '#<fieldset class="comment-reply"([^>]*)>(.*)<\/fieldset>#is', $injected_fields, $content );
+		// Inject our Field within the Author URL field <div>
+		$content = preg_replace( '#id="author-url"(?:[^>]*)>#is', "$0</div>{$insert}", $content );
 		
 		/**
 		 * Allow modification of the Edit Comments page

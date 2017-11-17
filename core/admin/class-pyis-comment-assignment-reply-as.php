@@ -83,17 +83,17 @@ final class PYIS_Comment_Assignment_Reply_As {
 		// Grab our Reply Submit Buttons from the Object Buffer
 		// The "s" at the end is the DOT-ALL modifier. This allows us to match over line-breaks
 		// Here's a good explaination: https://stackoverflow.com/a/2240607
-		$match = preg_match( '#<p id="replysubmit"(?:[^>]*)>(.+?)<\/p>#is', $page_content, $matches );
+		$match = preg_match( '#id="replysubmit"(?:[^>]*)>(.+?)<\/p>#is', $page_content, $matches );
 		
 		// Remove any Line Breaks from the Reply Submit Buttons we just grabbed
 		// If we remove the Line Breaks from the Object Buffer itself it produces errors for some reason
 		$buttons = preg_replace( "/\r|\n|\t/", "", $matches[0] );
 		
-		// Place all of our injected fields after the last </div> in the Reply Submit Buttons
+		// Place all of our injected fields just before the Waiting Spinner. With CSS it appears just after due to floating
 		$injected_buttons = substr_replace( $buttons, $insert . '<span class="waiting', strpos( $buttons, '<span class="waiting' ), 20 );
 		
 		// Swap the Reply Submit Buttons if the Object Buffer with our modified one
-		$page_content = preg_replace( '#<p id="replysubmit"(?:[^>]*)>(.+?)<\/p>#is', $injected_buttons, $page_content );
+		$page_content = preg_replace( '#id="replysubmit"(?:[^>]*)>(.+?)<\/p>#is', $injected_buttons, $page_content );
 
 		return $page_content;
 		
