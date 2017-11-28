@@ -21,9 +21,6 @@ final class PYIS_Comment_Assignment_Reply_As {
 		
 		add_filter( 'pyis_comment_assignment_edit_comments_html', array( $this, 'add_reply_as_field' ) );
 		
-		// We do not need to add this explicitly to the Assigned to Others page as that inherits much more from the global Edit Comments page than the Assigned to Me page does
-		add_filter( 'pyis_comment_assignment_assigned_to_me_html', array( $this, 'add_reply_as_field' ) );
-		
 		add_action( 'wp_ajax_replyto-comment', array( $this, 'wp_ajax_replyto_comment' ), 1 );
 		
 	}
