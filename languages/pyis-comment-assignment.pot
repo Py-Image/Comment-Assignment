@@ -34,7 +34,7 @@ msgstr ""
 msgid "Assign"
 msgstr ""
 
-#: core/admin/class-pyis-comment-assignment-reply-as.php:78
+#: core/admin/class-pyis-comment-assignment-reply-as.php:75
 msgid "Reply As"
 msgstr ""
 
