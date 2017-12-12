@@ -157,10 +157,15 @@ final class PYIS_Comment_Assignment_Assigned_To_Others {
 		if ( $current_screen->id !== 'assigned-to-others' ) return;
 			
 		$query->meta_query = new WP_Meta_Query( array(
-			'relation' => 'OR',
+			'relation' => 'AND',
 			array(
 				'key' => 'assigned_to',
 				'value' => get_current_user_id(),
+				'compare' => '!=',
+			),
+			array(
+				'key' => 'assigned_to',
+				'value' => '',
 				'compare' => '!=',
 			),
 		) );
@@ -223,7 +228,7 @@ final class PYIS_Comment_Assignment_Assigned_To_Others {
 		$post_id = (int) $post_id;
 		$user_id = ( ! $user_id ) ? get_current_user_id() : (int) $user_id;
 
-		$where = $wpdb->prepare( "WHERE {$wpdb->commentmeta}.meta_key = 'assigned_to' AND {$wpdb->commentmeta}.meta_value != '%d'", $user_id );
+		$where = $wpdb->prepare( "WHERE {$wpdb->commentmeta}.meta_key = 'assigned_to' AND {$wpdb->commentmeta}.meta_value != '%d' AND wp_commentmeta.meta_value != ''", $user_id );
 		if ( $post_id > 0 ) {
 			$where .= $wpdb->prepare("AND {$wpdb->comments}.comment_post_ID = %d", $post_id);
 		}
