@@ -7,12 +7,35 @@
 
 			event.preventDefault();
 
-			var $el = $( this );
+			var $el = $( this ),
+				commentID = $el.data( 'comment-id' );
 			
 			var $editRow = $( '#replyrow' ),
 				$row = $el.closest( 'tr.comment' );
 			
-			$( '#assigned-to-select', $editRow ).val( $row.find( 'td.assigned_to div.assigned-to' ).text().trim() ).trigger( 'change' );
+			var assignedTo = function() {
+				
+				var temp = '';
+				
+				$.ajax( {
+					'async': false,
+					'type': 'POST',
+					'url': ajaxurl,
+					'data': {
+						'comment_ID': commentID,
+						'action': 'pyis_get_comment_assignment',
+						'_ajax_nonce-replyto-comment': $( '#_ajax_nonce-replyto-comment' ).val(),
+					},
+					'success': function ( response ) {
+						temp = response.data;
+					}
+				} );
+				
+				return temp;
+			
+			}();
+			
+			$( '#assigned-to-select', $editRow ).val( assignedTo ).trigger( 'change' );
 
 		} );
 

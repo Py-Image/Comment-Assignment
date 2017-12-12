@@ -29,6 +29,8 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		add_action( 'wp_ajax_edit-comment', array( $this, 'wp_ajax_edit_comment' ), 1 );
 		
+		add_action( 'wp_ajax_pyis_get_comment_assignment', array( $this, 'wp_ajax_pyis_get_comment_assignment' ) );
+		
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		
 		add_action( 'add_meta_boxes_comment', array( $this, 'add_meta_boxes_comment' ) );
@@ -172,6 +174,26 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 				$_POST['assigned_to'] !== '' ) {
 			$success = update_comment_meta( $comment_id, 'assigned_to', $_POST['assigned_to'] );
 		}
+		
+	}
+	
+	/**
+	 * Since the Assigned To column has been removed, we need to run some basic AJAX to auto-populate the Assignment Field for Quick Edit
+	 * 
+	 * @access		public
+	 * @since		{{VERSION}}
+	 * @return		void
+	 */
+	public function wp_ajax_pyis_get_comment_assignment() {
+		
+		check_ajax_referer( 'replyto-comment', '_ajax_nonce-replyto-comment' );
+		
+		$comment_id = (int) $_POST['comment_ID'];
+		
+		$assigned_to = get_comment_meta( $comment_id, 'assigned_to', true );
+		$assigned_to = ( $assigned_to ) ? $assigned_to : '';
+		
+		wp_send_json_success( $assigned_to );
 		
 	}
 	
