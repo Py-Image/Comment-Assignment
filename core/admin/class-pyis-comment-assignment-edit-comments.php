@@ -10,10 +10,6 @@
 
 defined( 'ABSPATH' ) || die();
 
-global $pyis_edit_comments_ajax;
-
-$pyis_edit_comments_ajax = false;
-
 final class PYIS_Comment_Assignment_Edit_Comments {
 	
 	/**
@@ -26,8 +22,6 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		add_filter( 'manage_edit-comments_columns', array( $this, 'get_columns' ) );
 		add_filter( 'manage_assigned-to-me_columns', array( $this, 'get_columns' ) );
 		add_filter( 'manage_assigned-to-others_columns', array( $this, 'get_columns' ) );
-		
-		add_action( 'manage_comments_custom_column', array( $this, 'assign_column' ), 10, 2 );
 		
 		// Inject User Assignment into Quick Edit screen
 		add_action( 'init', array( $this, 'start_page_capture' ), 99 );
@@ -44,8 +38,7 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 	}
 	
 	/**
-	 * WordPress does not provide us with a "normal" way to add columns to the Comments List Table
-	 * By grabbing the Class itself using WP's internal methods, we can grab the in-use Columns and then append our own
+	 * We have to do this to make the columns show properly on each page
 	 * 
 	 * @access		public
 	 * @since		{{VERSION}}
@@ -58,56 +51,7 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		
 		$columns = PYISCOMMENTASSIGNMENT()->comments_list_table->get_columns();
 		
-		global $pagenow;
-		global $current_screen;
-		
-		global $pyis_edit_comments_ajax;
-		
-		// Allow AJAX for Edit Comments to go through but disallow the Assigned Column from showing on the Assigned to Me Page
-		if ( ! is_admin() ||
-			$current_screen->id == 'assigned-to-me' || 
-		   ( $pagenow !== 'edit-comments.php' && ! $pyis_edit_comments_ajax ) ) return $columns;
-		
-		// Reset
-		$pyis_edit_comments_ajax = false;
-		
-		$columns['assigned_to'] = __( 'Assigned To', 'pyis-comment-assignment' );
-		
 		return $columns;
-		
-	}
-	
-	/**
-	 * Place our own stuff within our custom Column
-	 * 
-	 * @param		string  $column_name Column Name
-	 * @param		integer $comment_id  Comment ID
-	 *                                      
-	 * @access		public
-	 * @since		{{VERSION}}
-	 * @return		void
-	 */
-	public function assign_column( $column_name, $comment_id ) {
-		
-		if ( $column_name !== 'assigned_to' ) return;
-		
-		$user_id = get_comment_meta( $comment_id, $column_name, true );
-		
-		if ( ! $user_id ) return;
-		
-		$user_data = get_userdata( $user_id );
-
-		?>
-
-		<a href="<?php echo admin_url( 'user-edit.php?user_id=' . $user_id ); ?>" title="<?php echo $user_data->display_name; ?>">
-			<?php echo $user_data->display_name; ?>
-		</a>
-
-		<div class="assigned-to hidden">
-			<?php echo get_comment_meta( $comment_id, 'assigned_to', true ); ?>
-		</div>
-		
-		<?php 
 		
 	}
 	
@@ -227,13 +171,6 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 		else if ( isset( $_POST['assigned_to'] ) && 
 				$_POST['assigned_to'] !== '' ) {
 			$success = update_comment_meta( $comment_id, 'assigned_to', $_POST['assigned_to'] );
-		}
-		
-		if ( isset( $_POST['assigned_to'] ) ) {
-			
-			global $pyis_edit_comments_ajax;
-			$pyis_edit_comments_ajax = true;
-			
 		}
 		
 	}
