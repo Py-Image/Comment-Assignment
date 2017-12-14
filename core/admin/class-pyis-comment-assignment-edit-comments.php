@@ -48,9 +48,6 @@ final class PYIS_Comment_Assignment_Edit_Comments {
 	 */
 	public function get_columns() {
 		
-		// If we don't do this, it will show the Admin Avatar twice. This does not appear to happen with anything else
-		remove_filter( 'comment_author', array( PYISCOMMENTASSIGNMENT()->comments_list_table, 'floated_admin_avatar' ) );
-		
 		$columns = PYISCOMMENTASSIGNMENT()->comments_list_table->get_columns();
 		
 		return $columns;

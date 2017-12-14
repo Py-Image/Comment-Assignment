@@ -268,6 +268,9 @@ if ( ! class_exists( 'PYIS_Comment_Assignment' ) ) {
 			
 			$this->comments_list_table = _get_list_table( 'WP_Comments_List_Table' );
 			
+			// If we don't do this, it will show the Avatar twice. This does not appear to happen with anything else
+			remove_filter( 'comment_author', array( $this->comments_list_table, 'floated_admin_avatar' ) );
+			
 		}
 		
 		/**
