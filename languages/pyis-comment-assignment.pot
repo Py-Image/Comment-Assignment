@@ -22,15 +22,15 @@ msgstr ""
 msgid "Assigned to Others"
 msgstr ""
 
-#: core/admin/class-pyis-comment-assignment-edit-comments.php:120, core/admin/class-pyis-comment-assignment-edit-comments.php:274
+#: core/admin/class-pyis-comment-assignment-edit-comments.php:117, core/admin/class-pyis-comment-assignment-edit-comments.php:271
 msgid "Select a User"
 msgstr ""
 
-#: core/admin/class-pyis-comment-assignment-edit-comments.php:128
+#: core/admin/class-pyis-comment-assignment-edit-comments.php:125
 msgid "Assign"
 msgstr ""
 
-#: core/admin/class-pyis-comment-assignment-edit-comments.php:234
+#: core/admin/class-pyis-comment-assignment-edit-comments.php:231
 msgid "Assigned To"
 msgstr ""
 
