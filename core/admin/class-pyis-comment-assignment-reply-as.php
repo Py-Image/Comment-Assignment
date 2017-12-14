@@ -107,19 +107,20 @@ final class PYIS_Comment_Assignment_Reply_As {
 		
 		global $current_user;
 		
-		if ( ! isset( $_POST['reply_as'] ) ) return;
-		
 		$real_user_id = get_current_user_id();
 		
-		$current_user = false;
-		
-		// If Viewing All Comments, re-assign to replying User
+		// If Viewing All Comments or the Post Edit Screen, re-assign to replying User
 		// Not who they're spoofed as
-		if ( $_POST['comments_listing'] == 'all' ) {
+		if ( $_POST['comments_listing'] == 'all' || 
+		   $_POST['comments_listing'] == '' ) {
 		
 			update_comment_meta( $_POST['comment_ID'], 'assigned_to', $real_user_id );
 			
 		}
+		
+		if ( ! isset( $_POST['reply_as'] ) ) return;
+		
+		$current_user = false;
 		
 		// Temporarily fake our Current User
 		wp_set_current_user( (int) $_POST['reply_as'] );

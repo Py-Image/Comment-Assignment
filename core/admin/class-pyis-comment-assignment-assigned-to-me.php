@@ -120,7 +120,7 @@ final class PYIS_Comment_Assignment_Assigned_To_Me {
 		$edit_comments = preg_replace( '#<h1([^>]*)>(.*?)' . __( 'Comments' ) . '(.*?)<\/h1>#is', '<h1$1>$2' . __( 'Assigned to Me', 'pyis-comment-assignment' ) . '$3</h1>', $edit_comments );
 		
 		// Add a hidden Input with our Page Slug so that any Searching or other Form Interactions always return us to our page
-		$edit_comments = preg_replace( '#<form id="comments-form" method="get">#is', '$0<input type="hidden" name="page" value="assigned_to_me" />', $edit_comments );
+		$edit_comments = preg_replace( '#<form id="comments-form" method="get">#is', '$0<input type="hidden" name="page" value="assigned_to_me" /><input type="hidden" name="comment_status" value="assigned_to_me" />', $edit_comments );
 		
 		// Add back in the JavaScript
 		foreach( $script_matches[0] as $script ) {
