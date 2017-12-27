@@ -22,20 +22,28 @@ msgstr ""
 msgid "Assigned to Others"
 msgstr ""
 
-#: core/admin/class-pyis-comment-assignment-edit-comments.php:117, core/admin/class-pyis-comment-assignment-edit-comments.php:271
+#: core/admin/class-pyis-comment-assignment-edit-comments.php:118, core/admin/class-pyis-comment-assignment-edit-comments.php:272
 msgid "Select a User"
 msgstr ""
 
-#: core/admin/class-pyis-comment-assignment-edit-comments.php:125
+#: core/admin/class-pyis-comment-assignment-edit-comments.php:126
 msgid "Assign"
 msgstr ""
 
-#: core/admin/class-pyis-comment-assignment-edit-comments.php:231
+#: core/admin/class-pyis-comment-assignment-edit-comments.php:232
 msgid "Assigned To"
 msgstr ""
 
 #: core/admin/class-pyis-comment-assignment-reply-as.php:75
 msgid "Reply As"
+msgstr ""
+
+#: core/admin/class-pyis-comment-assignment-unassigned.php:64, core/admin/class-pyis-comment-assignment-unassigned.php:65
+msgid "Unassigned"
+msgstr ""
+
+#: core/admin/class-pyis-comment-assignment-unassigned.php:120
+msgid "Unassigned Comments"
 msgstr ""
 
 #: pyis-comment-assignment.php:69
