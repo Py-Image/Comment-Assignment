@@ -3,7 +3,7 @@
  * Plugin Name: PYIS Comment Assignment
  * Plugin URI: https://github.com/Py-Image/comment-assignment
  * Description: Allows assigning Comments and Spoofing Comment Replies as another User
- * Version: 0.6.0
+ * Version: 1.0.0
  * Text Domain: pyis-comment-assignment
  * Author: Real Big Marketing
  * Author URI: https://realbigmarketing.com/
